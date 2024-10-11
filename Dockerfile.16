@@ -9,7 +9,8 @@ RUN echo "postgres ALL=(root) NOPASSWD: /usr/bin/mkdir, /bin/chown, /usr/bin/ope
 
 # Add init scripts while setting permissions
 COPY --chmod=755 init-ssl.sh /docker-entrypoint-initdb.d/init-ssl.sh
-COPY --chmod=755 wrapper.sh /usr/local/bin/wrapper.sh
+COPY wrapper.sh /usr/local/bin/wrapper.sh
+RUN chmod +x /usr/local/bin/wrapper.sh
 
 # Create a configuration script to set wal_level to 'logical'
 COPY --chmod=755 config-wal.sh /docker-entrypoint-initdb.d/config-wal.sh
