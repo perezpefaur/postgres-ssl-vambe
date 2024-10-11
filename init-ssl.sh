@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Log directory and file permissions
+ls -ld "$SSL_DIR"
+ls -l "$SSL_DIR"
+
+if [ -z "$PGDATA" ]; then
+  echo "Error: PGDATA is not set."
+  exit 1
+fi
+
 # exit as soon as any of these commands fail, this prevents starting a database without certificates
 set -e
 
