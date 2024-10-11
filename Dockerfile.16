@@ -23,5 +23,5 @@ RUN echo "shared_preload_libraries = 'pglogical'" >> /usr/share/postgresql/postg
 # Set executable permissions for the wrapper script
 RUN chmod +x /usr/local/bin/wrapper.sh
 
-ENTRYPOINT ["wrapper.sh"]
+ENTRYPOINT ["/usr/local/bin/wrapper.sh"]
 CMD ["postgres", "--port=5432"]
