@@ -12,7 +12,7 @@ COPY --chmod=755 init-ssl.sh /docker-entrypoint-initdb.d/init-ssl.sh
 COPY --chmod=755 wrapper.sh /usr/local/bin/wrapper.sh
 
 # Create a configuration script to set wal_level to 'logical'
-COPY --chmod=755 config-wal.sh /docker-entrypoint-initdb.d/config-wal.sh
+#COPY --chmod=755 config-wal.sh /docker-entrypoint-initdb.d/config-wal.sh
 
 # Set environment variables to enable pglogical
 ENV POSTGRES_INITDB_ARGS="--wal-level=logical"
