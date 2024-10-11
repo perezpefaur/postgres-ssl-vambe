@@ -3,6 +3,8 @@
 # exit as soon as any of these commands fail, this prevents starting a database without certificates
 set -e
 
+ls -l /usr/local/bin/wrapper.sh
+
 # Make sure there is a PGDATA variable available
 if [ -z "$PGDATA" ]; then
   echo "Missing PGDATA variable"
