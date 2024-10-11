@@ -20,8 +20,5 @@ ENV POSTGRES_INITDB_ARGS="--wal-level=logical"
 # Ensure pglogical is loaded and enabled
 RUN echo "shared_preload_libraries = 'pglogical'" >> /usr/share/postgresql/postgresql.conf.sample
 
-# Set executable permissions for the wrapper script
-RUN chmod +x /usr/local/bin/wrapper.sh
-
 ENTRYPOINT ["wrapper.sh"]
 CMD ["postgres", "--port=5432"]
