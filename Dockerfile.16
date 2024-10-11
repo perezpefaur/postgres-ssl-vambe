@@ -1,7 +1,8 @@
+# Use Postgres 16 as the base image
 FROM postgres:16
 
-# Install OpenSSL and sudo
-RUN apt-get update && apt-get install -y openssl sudo
+# Install OpenSSL, sudo, and pglogical extension dependencies
+RUN apt-get update && apt-get install -y openssl sudo postgresql-16-pglogical
 
 # Allow the postgres user to execute certain commands as root without a password
 RUN echo "postgres ALL=(root) NOPASSWD: /usr/bin/mkdir, /bin/chown, /usr/bin/openssl" > /etc/sudoers.d/postgres
@@ -9,6 +10,18 @@ RUN echo "postgres ALL=(root) NOPASSWD: /usr/bin/mkdir, /bin/chown, /usr/bin/ope
 # Add init scripts while setting permissions
 COPY --chmod=755 init-ssl.sh /docker-entrypoint-initdb.d/init-ssl.sh
 COPY --chmod=755 wrapper.sh /usr/local/bin/wrapper.sh
+
+# Create a configuration script to set wal_level to 'logical'
+COPY --chmod=755 config-wal.sh /docker-entrypoint-initdb.d/config-wal.sh
+
+# Set environment variables to enable pglogical
+ENV POSTGRES_INITDB_ARGS="--wal-level=logical"
+
+# Ensure pglogical is loaded and enabled
+RUN echo "shared_preload_libraries = 'pglogical'" >> /usr/share/postgresql/postgresql.conf.sample
+
+# Set executable permissions for the wrapper script
+RUN chmod +x /usr/local/bin/wrapper.sh
 
 ENTRYPOINT ["wrapper.sh"]
 CMD ["postgres", "--port=5432"]
