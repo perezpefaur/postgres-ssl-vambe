@@ -14,11 +14,11 @@ if [ -z "${PGDATA}" ]; then
     exit 1
 fi
 
-# Check if postgresql.conf exists
-if [ ! -f "${PGDATA}/postgresql.conf" ]; then
-    echo "Error: ${PGDATA}/postgresql.conf does not exist."
-    exit 1
-fi
+# Wait until postgresql.conf is created
+while [ ! -f "${PGDATA}/postgresql.conf" ]; do
+    echo "Waiting for postgresql.conf to be created..."
+    sleep 1
+done
 
 # Modify postgresql.conf
 modify_postgresql_conf

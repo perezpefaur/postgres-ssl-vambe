@@ -14,11 +14,11 @@ COPY --chmod=755 wrapper.sh /usr/local/bin/wrapper.sh
 # Create a configuration script to set wal_level to 'logical'
 COPY --chmod=755 config-wal.sh /docker-entrypoint-initdb.d/config-wal.sh
 
-# Set environment variables to enable pglogical
-ENV POSTGRES_INITDB_ARGS="--wal-level=logical"
-
 # Ensure pglogical is loaded and enabled
 RUN echo "shared_preload_libraries = 'pglogical'" >> /usr/share/postgresql/postgresql.conf.sample
 
+# Set the ENTRYPOINT to your wrapper script
 ENTRYPOINT ["/usr/local/bin/wrapper.sh"]
+
+# Provide default command arguments
 CMD ["postgres", "-p", "5432"]
