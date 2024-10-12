@@ -14,6 +14,9 @@ COPY --chmod=755 wrapper.sh /usr/local/bin/wrapper.sh
 # Create a configuration script to set required PostgreSQL parameters
 COPY --chmod=755 config-wal.sh /docker-entrypoint-initdb.d/config-wal.sh
 
+# Copy the configuration script to the root directory
+COPY --chmod=755 config-wal.sh /config-wal.sh
+
 # Set the ENTRYPOINT to your wrapper script
 ENTRYPOINT ["wrapper.sh"]
 

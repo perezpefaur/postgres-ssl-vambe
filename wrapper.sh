@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# exit as soon as any of these commands fail, this prevents starting a database without certificates
+# Exit as soon as any command fails
 set -e
 
 # Make sure there is a PGDATA variable available
@@ -28,28 +28,32 @@ if [ -f "$SSL_DIR/server.crt" ] && ! openssl x509 -checkend 2592000 -noout -in "
 fi
 
 # Generate a certificate if the database was initialized but is missing a certificate
-# Useful when going from the base postgres image to this ssl image
+# Useful when going from the base postgres image to this SSL image
 if [ -f "$POSTGRES_CONF_FILE" ] && [ ! -f "$SSL_DIR/server.crt" ]; then
   echo "Database initialized without certificate, generating certificates..."
   bash "$INIT_SSL_SCRIPT"
 fi
 
-# unset PGHOST to force psql to use Unix socket path
-# this is specific to Railway and allows
-# us to use PGHOST after the init
+# **Add this section to run config-wal.sh**
+# Wait until postgresql.conf is created
+while [ ! -f "${PGDATA}/postgresql.conf" ]; do
+    echo "Waiting for postgresql.conf to be created..."
+    sleep 1
+done
+
+# Execute the configuration script to modify postgresql.conf
+echo "Executing config-wal.sh to set required PostgreSQL parameters..."
+bash /docker-entrypoint-initdb.d/config-wal.sh
+
+# Unset PGHOST to force psql to use Unix socket path (specific to Railway)
 unset PGHOST
 
-## unset PGPORT also specific to Railway
-## since postgres checks for validity of
-## the value in PGPORT we unset it in case
-## it ends up being empty
+# Unset PGPORT to prevent issues with empty values
 unset PGPORT
 
-# Call the entrypoint script with the
-# appropriate PGHOST & PGPORT and redirect
-# the output to stdout if LOG_TO_STDOUT is true
+# Call the entrypoint script and redirect output if LOG_TO_STDOUT is true
 if [[ "$LOG_TO_STDOUT" == "true" ]]; then
-    /usr/local/bin/docker-entrypoint.sh "$@" 2>&1
+    exec /usr/local/bin/docker-entrypoint.sh "$@" 2>&1
 else
-    /usr/local/bin/docker-entrypoint.sh "$@"
+    exec /usr/local/bin/docker-entrypoint.sh "$@"
 fi
