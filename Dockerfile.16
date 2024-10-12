@@ -24,4 +24,4 @@ RUN echo "shared_preload_libraries = 'pglogical'" >> /usr/share/postgresql/postg
 RUN chmod +x /usr/local/bin/wrapper.sh
 
 ENTRYPOINT ["chmod", "+x", "wrapper.sh"]
-CMD ["postgres", "--port=5432"]
+CMD ["postgres", "-p", "5432"]
